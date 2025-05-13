@@ -2,19 +2,20 @@
  * @NOTE: Prepend a `~` to css file paths that are in your node_modules
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
+@font-face {
+  font-family: Valo;
+  src: url('./assets/custom.ttf');
+  font-weight: bold;
+}
+
 body {
   position: relative;
   color: white;
   height: 100vh;
-  background: linear-gradient(
-    200.96deg,
-    #fedc2a -29.09%,
-    #dd5789 51.77%,
-    #7a2c9e 129.35%
-  );
+  background: #151515;
   font-family: sans-serif;
-  overflow-y: hidden;
   display: flex;
+  overflow-x: hidden;
   justify-content: center;
   align-items: center;
 }
@@ -60,3 +61,167 @@ a:hover {
   align-items: center;
   margin: 20px 0;
 }
+
+#authservice {
+  display: flex;
+  flex-direction: column;
+  margin: 20px;
+  height: 650px;
+  backdrop-filter: blur(150px);
+  background-color: rgba(255, 255, 255, 0.1); 
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+  border-radius: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+#preauthservice {
+  display: flex;
+  flex-direction: column;
+  margin: 20px;
+  height: 650px;
+  
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+  border-radius: 20px;
+  
+}
+
+#shader {
+  box-shadow: 0px 20px 300px 20px white;
+  position: fixed;
+  top: -20px;
+  z-index: -1;
+  width: 100%;
+}
+
+#webservice {
+  width: 90%;
+  height: 90%;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 15px;
+}
+
+#urlview {
+  padding: 10px;
+  margin: 15px;
+  backdrop-filter: blur(150px);
+  background-color: rgba(255, 255, 255, 0.1); 
+  border-radius: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+}
+
+#backview {
+  padding: 10px;
+  margin: 15px;
+  backdrop-filter: blur(150px);
+  background-color: rgba(255, 255, 255, 0.1); 
+  border-radius: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+#titleb {
+  -webkit-app-region: drag; 
+  height: 32px;
+  width: 100%; 
+  background: transparent;
+  position: fixed;
+  top: 0;
+  z-index: -1
+}
+
+#start {
+  padding: 15px;
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  background: rgba(255, 0, 0, 0.7);
+  border: 3px solid rgba(255, 0, 0, 1);
+  height: 60px;
+}
+
+#agentView {
+  padding: 20px 0px 20px 0px;
+  backdrop-filter: blur(150px);
+  background-color: rgba(255, 255, 255, 0.05);
+  margin: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+#agentView:hover {
+  background-color: white;
+  color: black;
+  scale: 0.95;
+}
+
+#agentName {
+  font-size: 20px;
+  font-weight: bolder;
+  font-family: Valo;
+  margin-top: 15px;
+}
+
+#avatar {
+  width: 130px;
+  padding: 5px;
+}
+
+html, body {
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;    /* Internet Explorer 10+ */
+  overflow-y: scroll;          /* Sigue permitiendo scroll */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;               /* Chrome, Safari, Edge */
+}
+
+
+
+/*
+
+axios.get('https://auth.riotgames.com/userinfo', {
+                headers: { Authorization: `Bearer ${token}` }
+            }).then((res) => {
+                console.log(res)
+                const puuid = res.data.sub;
+                setPUUID(puuid);
+
+                return axios.get(`https://glz-eu-1.eu.a.pvp.net/pregame/v1/players/${puuid}`, {
+                    headers: {
+                        "X-Riot-ClientPlatform": "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
+                        "X-Riot-ClientVersion": "B920FBFF19DBA8A7",
+                        "X-Riot-Entitlements-JWT": entitlements,
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                }).then((res) => {
+                    const matchID = res.data.MatchID;
+                    setMatchID(matchID);
+                    window.electron.ipcRenderer.instalock(PUUID, props.agentID, token, entitlements);
+                }).catch((err) => {
+                    alert(err.message);
+                    console.error(err)
+                }
+            );
+
+*/

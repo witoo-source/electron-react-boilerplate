@@ -9,11 +9,13 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, session } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import axios from 'axios';
+import { IPreGame, IUser } from '../renderer/components/Agent.interface';
 
 class AppUpdater {
   constructor() {
@@ -74,10 +76,12 @@ const createWindow = async () => {
     width: 1024,
     height: 728,
     icon: getAssetPath('icon.png'),
+    titleBarStyle: 'hidden',
     webPreferences: {
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
+        webviewTag: true
     },
   });
 
@@ -128,6 +132,11 @@ app
   .whenReady()
   .then(() => {
     createWindow();
+    session.defaultSession.clearStorageData({
+      storages: ['cookies']  // Puedes especificar qué almacenar borrar: cookies, caché, etc.
+    }).then(() => {
+      console.log('Cookies borradas!');
+    });
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
@@ -135,3 +144,79 @@ app
     });
   })
   .catch(console.log);
+
+
+ipcMain.handle('clear-cookies', async () => {
+  await session.defaultSession.clearStorageData({
+    storages: ['cookies']
+  });
+  console.log('Cookies borradas desde React!');
+});
+
+ipcMain.handle('get-entitlements', async (event, token) => {
+  try {
+    //console.log(token)
+    const response = await axios.post('https://entitlements.auth.riotgames.com/api/token/v1', {}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    //console.log("ENTITLEMENTS: " + response.data.entitlements_token)
+    
+    return response.data.entitlements_token;
+
+  } catch (error: any) {
+    console.error('Error al obtener entitlements:', error.message);
+    throw error.message; 
+  }
+});
+
+ipcMain.handle('get-puuid', async (event, token) => {
+  try {
+    const response = await axios.get('https://auth.riotgames.com/userinfo', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+
+    return (response.data as IUser).sub
+  } catch(e) {
+    console.error(e)
+  }
+})
+
+ipcMain.handle('get-match-id', async (event, pid, auid, token, entitlements) => {
+  try {
+    const response = await axios.get(`https://glz-eu-1.eu.a.pvp.net/pregame/v1/players/${pid}`, {
+      headers: {
+        "X-Riot-ClientPlatform": "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
+        "X-Riot-ClientVersion": "B920FBFF19DBA8A7",
+        "X-Riot-Entitlements-JWT": entitlements,
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    return (response.data as IPreGame).MatchID
+  } catch(e) {
+    console.error(e)
+  }
+})
+
+ipcMain.handle('instalock', async (event, mid, auid, token, entitlements) => {
+  try {
+    console.log(mid, auid, token, entitlements)
+    const response = await axios.post(`https://glz-eu-1.eu.a.pvp.net/pregame/v1/matches/${mid}/lock/${auid}`, {}, {
+      headers: {
+        "X-Riot-ClientPlatform": "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
+        "X-Riot-ClientVersion:": "B920FBFF19DBA8A7",
+        "X-Riot-Entitlements-JWT": entitlements,
+        Authorization: `Bearer ${token}`
+      }
+    })
+
+    return response ? "success" : "error"
+
+  } catch(e) {
+    console.log(e)
+  }
+})
