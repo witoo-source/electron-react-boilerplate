@@ -208,7 +208,7 @@ ipcMain.handle('instalock', async (event, mid, auid, token, entitlements) => {
     const response = await axios.post(`https://glz-eu-1.eu.a.pvp.net/pregame/v1/matches/${mid}/lock/${auid}`, {}, {
       headers: {
         "X-Riot-ClientPlatform": "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
-        "X-Riot-ClientVersion:": "B920FBFF19DBA8A7",
+        "X-Riot-ClientVersion": "B318723E61D84617",
         "X-Riot-Entitlements-JWT": entitlements,
         Authorization: `Bearer ${token}`
       }
